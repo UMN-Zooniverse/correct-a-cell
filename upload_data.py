@@ -5,8 +5,12 @@ import pandas as pd
 import argparse
 import pathlib
 from panoptes_client import Panoptes, Subject, SubjectSet, Project
+from panoptes_client.panoptes import PanoptesAPIException
 import getpass
 import logging
+import humanize
+
+MAX_UPLOAD_SIZE = 1000 * 1000
 
 logger = logging.getLogger(__name__)
 
@@ -20,17 +24,17 @@ def link_subject_set(client, subject_set, subjects):
 
 
 def upload():
-    parser = argparse.ArgumentParser('CSV creator', description='Create Caesar-compatible CSV for FatChecker data upload')
+    parser = argparse.ArgumentParser('upload_data', description='Upload image data to Zooniverse for Correct-a-Cell')
 
     parser.add_argument('-d', '--data_folder', type=pathlib.Path, required=True)
     parser.add_argument('-p', '--project_id', type=int, required=True)
     parser.add_argument('--subject_set_name', type=str, default=None)
-    parser.add_argument('--subject_set', type=int, default=None)
+    parser.add_argument('--subject_set_id', type=int, default=None)
     parser.add_argument('-o', '--output_manifest', type=argparse.FileType('w'), default='subjects.csv')
 
     args = parser.parse_args()
 
-    if (args.subject_set_name is None) and (args.subject_set is None):
+    if (args.subject_set_name is None) and (args.subject_set_id is None):
         raise ValueError("Please enter a subject set name to create a new subject set or a subject set ID to upload to an existing set")
 
     username = getpass.getpass("Panoptes username: ")
@@ -52,7 +56,11 @@ def upload():
 
     manifest = []
     subjects = []
-    for image in tqdm.tqdm(images):
+    for image in tqdm.tqdm(images, ascii=True, dynamic_ncols=True, desc='Creating subjects'):
+
+        if os.path.getsize(image) > MAX_UPLOAD_SIZE:
+            raise PanoptesAPIException(f"{image} has file size {humanize.naturalsize(os.path.getsize(image))} which is greater than the upload limit of {humanize.naturalsize(MAX_UPLOAD_SIZE)}")
+
         subject = Subject()
         subject.links.project = subject_set.links.project
         subject.add_location(image)

@@ -10,6 +10,8 @@ import string
 import argparse
 import pathlib
 
+figt, axt = plt.subplots(1, 1)
+
 
 def generate_annotations(seg_map):
     '''
@@ -27,25 +29,23 @@ def generate_annotations(seg_map):
             the pixel value of each point. Automatically rounded to integer with
             duplicates removed
     '''
-    figt, axt = plt.subplots(1, 1)
+    axt.cla()
     cont = axt.contour(seg_map, [0.99])
     paths = cont.collections[0].get_paths()
-    figt.clf()
-    plt.close(figt)
 
     lines = []
     for path in paths:
         v = path.vertices
         if len(v) > 50:
-            line = np.asarray(v.T, dtype=int)
-            _, inds = np.unique(line, axis=1, return_index=True)
-            line = line[:, sorted(inds)].T
-            lines.append(line)
+            line = np.asarray(v, dtype=int)
+            _, inds = np.unique(line, axis=0, return_index=True)
+            lines.append(line[sorted(inds), :])
+
     return lines
 
 
 def create_csv():
-    parser = argparse.ArgumentParser('CSV creator', description='Create Caesar-compatible CSV for FatChecker data upload')
+    parser = argparse.ArgumentParser('create_csv', description='Create Caesar-compatible CSV for FatChecker data upload')
 
     parser.add_argument('-d', '--data_folder', type=pathlib.Path, required=True)
     parser.add_argument('-m', '--subject_manifest', type=argparse.FileType('r'), required=True)
@@ -58,13 +58,16 @@ def create_csv():
 
     manifest = pd.read_csv(args.subject_manifest)
 
+    fileIDs = np.asarray([os.path.splitext(f)[0] for f in manifest.filename])
+    subjectIDs = np.asarray(manifest.subject_id)
+
     assert len(masks) == len(manifest), f"Number of mask images ({len(masks)}) and length of manifest ({len(manifest)}) are different!"
 
     json_data = []
-    for img in tqdm.tqdm(masks):
+    for img in tqdm.tqdm(masks, ascii=True, dynamic_ncols=True, desc="Generating annotations"):
         predicted_mask_array = plt.imread(img)[:, :, 0]
         anno = generate_annotations(predicted_mask_array)
-        subject_id = manifest.subject_id[manifest.filename == os.path.splitext(os.path.basename(img))[0]]
+        subject_id = subjectIDs[np.where(fileIDs == os.path.splitext(os.path.basename(img))[0])[0]][0]
         rowi = {
             'subject_id': subject_id,
             'extractor_key': 'machineLearnt2'
