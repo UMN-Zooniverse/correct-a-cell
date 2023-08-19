@@ -1,0 +1,17 @@
+dataset: 
+  type: FatCheckerInferenceDataset
+  size: 384
+  dataset_path: /d1/rsankar/correct-a-cell/umii-fatchecker-dataset/images/
+model_params:
+  gen_filts: 32
+  disc_filts: 16
+  activation: relu
+  use_dropout: True
+  final_activation: sigmoid
+  n_disc_layers: 6
+infer_params:
+  threshold: 0.7
+  overlap: 0.5
+checkpoint_paths: 
+  generator: checkpoints-32-16-relu/generator_ep_050.pth
+  discriminator: checkpoints-32-16-relu/discriminator_ep_050.pth
