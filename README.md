@@ -49,7 +49,7 @@ python3 upload_data.py [-h] -d DATA_FOLDER -p PROJECT_ID [--subject_set_name SUB
  * `OUTPUT_MANIFEST`: the path to the output manifest file which will store the mapping between the filenames and Zooniverse subject ID
 
 ### Import the workflow on Caesar
-Log in to [caesar.zooniverse.org](caesar.zooniverse.org) with your Zooniverse username and password and click on Workflows. Click the "+ Add" button and type in the Workflow ID on Zooniverse.
+Log in to [caesar.zooniverse.org](https://caesar.zooniverse.org) with your Zooniverse username and password and click on Workflows. Click the "+ Add" button and type in the Workflow ID on Zooniverse.
 Follow the steps [here](https://zooniverse.github.io/caesar/#creating-an-extractor) to create an extractor and reducer. For the ML annotations, we will create a Blank Extractor and a FirstExtract reducer.
 The extractor key is up to you, but the reducer key must be `machineLearnt`. Make sure to specify the extractor key when configuring the reducers (see [here](https://zooniverse.github.io/caesar/#filters)).
 

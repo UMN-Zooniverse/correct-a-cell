@@ -1,0 +1,5 @@
+einops
+patchgan>=0.1
+panoptes_client
+pandas
+matplotlib
