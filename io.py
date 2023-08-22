@@ -3,6 +3,7 @@ from torch.utils.data import Dataset
 import numpy as np
 import glob
 import os
+import matplotlib.pyplot as plt
 from torchvision.io import read_image, ImageReadMode
 from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, RandomVerticalFlip
 
@@ -72,3 +73,7 @@ class FatCheckerInferenceDataset(Dataset):
 
     def get_filename(self, index):
         return os.path.basename(self.images[index])
+
+    @staticmethod
+    def save_mask(mask, output_path, out_fname):
+        plt.imsave(os.path.join(output_path, out_fname + ".png"), mask, cmap='gray')
