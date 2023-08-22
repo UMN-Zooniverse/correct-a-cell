@@ -69,7 +69,7 @@ This must be done in two steps. First, we must upload the generated CSV file to 
 One way to upload data to a public URL is using [file.io](https://www.file.io), through the following command:
 
 ```
-curl "file=@[path/to/csv/file]" https://file.io
+curl -F "file=@[path/to/csv/file]" https://file.io
 ```
 replacing `[path/to/csv/file]` with the path to the CSV file generated above (note the extra `@` before the file path). This returns a dictionary like the one below:
 ```
