@@ -70,7 +70,7 @@ def create_csv():
         subject_id = subjectIDs[np.where(fileIDs == os.path.splitext(os.path.basename(img))[0])[0]][0]
         rowi = {
             'subject_id': subject_id,
-            'extractor_key': 'machineLearnt2'
+            'extractor_key': args.extractor_key
         }
         data = []
         for line in anno:
